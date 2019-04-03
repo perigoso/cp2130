@@ -2,7 +2,7 @@
 
 #include "cp2130.h"
 
-cp2130_device_t *cp2130_init(libusb_context *ctx)   // Done
+cp2130_device_t *cp2130_init(libusb_context *ctx)
 {
     printf("\n\rallocating space for cp2130 device...");
     cp2130_device_t *pCp2130_dev = (cp2130_device_t *)malloc(sizeof(cp2130_device_t));
@@ -48,7 +48,7 @@ cp2130_device_t *cp2130_init(libusb_context *ctx)   // Done
     printf("\n\rcp2130 initialization success...");
     return pCp2130_dev;
 }
-void cp2130_free(cp2130_device_t *pCpDev)   // Done
+void cp2130_free(cp2130_device_t *pCpDev)
 {
     if(!pCpDev)
         return;
@@ -63,13 +63,13 @@ void cp2130_free(cp2130_device_t *pCpDev)   // Done
     free(pCpDev);
 }
 
-static void cp2130_control_transfer(cp2130_device_t *pCpDev, uint8_t ubReqType, uint8_t ubRequest, uint8_t * pubData, uint16_t usLen, uint16_t usWvalue, uint16_t usWindex) // Done
+static void cp2130_control_transfer(cp2130_device_t *pCpDev, uint8_t ubReqType, uint8_t ubRequest, uint8_t * pubData, uint16_t usLen, uint16_t usWvalue, uint16_t usWindex)
 {
     int32_t ulR = libusb_control_transfer(pCpDev->pDev, ubReqType, ubRequest, usWvalue, usWindex, pubData, usLen, pCpDev->usTimeout);
     if(ulR < 0)
         printf("\n\rcontrol_transfer failed with return code %d", ulR);
 }
-static void cp2130_bulk_transfer(cp2130_device_t *pCpDev, uint8_t ubEp, uint8_t * pubData, uint32_t ulLen)  // Done
+static void cp2130_bulk_transfer(cp2130_device_t *pCpDev, uint8_t ubEp, uint8_t * pubData, uint32_t ulLen)
 {
     uint32_t ulTransferred;
     uint32_t ulR = libusb_bulk_transfer(pCpDev->pDev, ubEp, pubData, ulLen, (int *)(&ulTransferred), pCpDev->usTimeout);
@@ -81,7 +81,7 @@ static void cp2130_bulk_transfer(cp2130_device_t *pCpDev, uint8_t ubEp, uint8_t 
 }
 
 // Data Transfer Commands (Bulk Transfers)
-void cp2130_spi_transfer(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen) // Done
+void cp2130_spi_transfer(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)
 {
     if (ulLen > 120)
     {
@@ -111,7 +111,7 @@ void cp2130_spi_transfer(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulL
 		cp2130_bulk_transfer(pCpDev, CP2130_EP_DEVICE_HOST, pubData + ulTransfered, ulToTransfer);
     }
 }
-void cp2130_spi_write(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)    // Done
+void cp2130_spi_write(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)
 {
     uint8_t *pubCmdBuf = (uint8_t *)malloc(MIN(ulLen + 8, 64u));
     memset(pubCmdBuf, 0x00, MIN(ulLen + 8, 64u));
@@ -136,7 +136,7 @@ void cp2130_spi_write(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)
         cp2130_bulk_transfer(pCpDev, CP2130_EP_HOST_DEVICE, pubData + ulTransfered, MIN(ulLen - ulTransfered, 64u));
     }
 }
-void cp2130_spi_read(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen) // Done
+void cp2130_spi_read(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)
 {
     uint8_t *pubCmdBuf = (uint8_t *)malloc(MIN(ulLen + 8, 64u));
     memset(pubCmdBuf, 0x00, MIN(ulLen + 8, 64u));
@@ -157,7 +157,7 @@ void cp2130_spi_read(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen) 
 		cp2130_bulk_transfer(pCpDev, CP2130_EP_DEVICE_HOST, pubData + ulTransfered, MIN(ulLen - ulTransfered, 64u));
 	}
 }
-void cp2130_spi_read_rtr(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen) // Done
+void cp2130_spi_read_rtr(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulLen)
 {
     uint8_t *pubCmdBuf = (uint8_t *)malloc(MIN(ulLen + 8, 64u));
     memset(pubCmdBuf, 0x00, MIN(ulLen + 8, 64u));
@@ -180,21 +180,21 @@ void cp2130_spi_read_rtr(cp2130_device_t *pCpDev, uint8_t *pubData, uint32_t ulL
 }
 
 // Configuration and Control Commands (Control Transfers)
-void cp2130_reset(cp2130_device_t *pCpDev)   // Done
+void cp2130_reset(cp2130_device_t *pCpDev)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_RESET, NULL, 0, 0, 0);
 }
 
-void cp2130_get_clockdiv(cp2130_device_t *pCpDev, uint8_t *pubClockDiv) // Done
+void cp2130_get_clockdiv(cp2130_device_t *pCpDev, uint8_t *pubClockDiv)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_CLK_DIV, pubClockDiv, 1, 0, 0);
 }
-void cp2130_set_clockdiv(cp2130_device_t *pCpDev, uint8_t ubClockDiv) // Done
+void cp2130_set_clockdiv(cp2130_device_t *pCpDev, uint8_t ubClockDiv)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_CLK_DIV, &ubClockDiv, 1, 0, 0);
 }
 
-void cp2130_get_event_counter(cp2130_device_t *pCpDev, uint8_t *pubMode, uint16_t *pusCount) // Done
+void cp2130_get_event_counter(cp2130_device_t *pCpDev, uint8_t *pubMode, uint16_t *pusCount)
 {
     uint8_t ubBuf[3] = {0, 0, 0};
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_EVNT_CNT, ubBuf, 3, 0, 0);
@@ -202,7 +202,7 @@ void cp2130_get_event_counter(cp2130_device_t *pCpDev, uint8_t *pubMode, uint16_
     *pusCount = (uint16_t)ubBuf[1] << 8;
     *pusCount |= ubBuf[2];
 }
-void cp2130_set_event_counter(cp2130_device_t *pCpDev, uint8_t ubMode, uint16_t usCount) // Done
+void cp2130_set_event_counter(cp2130_device_t *pCpDev, uint8_t ubMode, uint16_t usCount)
 {
     uint8_t ubBuf[3];
     ubBuf[0] = ubMode;
@@ -211,16 +211,16 @@ void cp2130_set_event_counter(cp2130_device_t *pCpDev, uint8_t ubMode, uint16_t 
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_EVNT_CNT, ubBuf, 3, 0, 0);
 }
 
-void cp2130_get_full_threshold(cp2130_device_t *pCpDev, uint8_t *pubThreshold) // Done
+void cp2130_get_full_threshold(cp2130_device_t *pCpDev, uint8_t *pubThreshold)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_FULL_TH, pubThreshold, 1, 0, 0);
 }
-void cp2130_set_full_threshold(cp2130_device_t *pCpDev, uint8_t ubThreshold) // Done
+void cp2130_set_full_threshold(cp2130_device_t *pCpDev, uint8_t ubThreshold)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_FULL_TH, &ubThreshold, 1, 0, 0);
 }
 
-void cp2130_get_gpio_cs(cp2130_device_t *pCpDev, uint16_t *pusCsEn, uint16_t *pusPinCsEn) // Done
+void cp2130_get_gpio_cs(cp2130_device_t *pCpDev, uint16_t *pusCsEn, uint16_t *pusPinCsEn)
 {
     uint8_t ubBuf[4];
     memset(ubBuf, 0x00, 4);
@@ -230,7 +230,7 @@ void cp2130_get_gpio_cs(cp2130_device_t *pCpDev, uint16_t *pusCsEn, uint16_t *pu
     *pusPinCsEn = ((uint16_t)ubBuf[2] << 8) & 0xFF00;
     *pusPinCsEn |= (uint16_t)ubBuf[3] & 0x00FF;
 }
-void cp2130_set_gpio_cs(cp2130_device_t *pCpDev, uint8_t usCh, uint8_t usCtrl)  // Done
+void cp2130_set_gpio_cs(cp2130_device_t *pCpDev, uint8_t usCh, uint8_t usCtrl)
 {
     uint8_t ubBuf[2];
     ubBuf[0] = usCh;
@@ -238,7 +238,7 @@ void cp2130_set_gpio_cs(cp2130_device_t *pCpDev, uint8_t usCh, uint8_t usCtrl)  
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_GPIO_CS, ubBuf, 2, 0, 0);
 }
 
-void cp2130_get_gpio_mode_level(cp2130_device_t *pCpDev, uint16_t *pusLevel, uint16_t *pusMode)  // Done
+void cp2130_get_gpio_mode_level(cp2130_device_t *pCpDev, uint16_t *pusLevel, uint16_t *pusMode)
 {
     uint8_t ubBuf[4];
     memset(ubBuf, 0x00, 4);
@@ -248,7 +248,7 @@ void cp2130_get_gpio_mode_level(cp2130_device_t *pCpDev, uint16_t *pusLevel, uin
     *pusMode = ((uint16_t)ubBuf[3] << 8) & 0xFF00;
     *pusMode |= (uint16_t)ubBuf[2] & 0x00FF;
 }
-void cp2130_set_gpio_mode_level(cp2130_device_t *pCpDev, uint8_t ubIndex, uint8_t ubMode, uint8_t ubLevel)  // Done
+void cp2130_set_gpio_mode_level(cp2130_device_t *pCpDev, uint8_t ubIndex, uint8_t ubMode, uint8_t ubLevel)
 {
     uint8_t ubBuf[3];
     ubBuf[0] = ubIndex;
@@ -257,7 +257,7 @@ void cp2130_set_gpio_mode_level(cp2130_device_t *pCpDev, uint8_t ubIndex, uint8_
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_GPIO_MDLVL, ubBuf, 3, 0, 0);
 }
 
-void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel)    // Done
+void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel)
 {
     uint8_t ubBuf[2];
     memset(ubBuf, 0x00, 2);
@@ -265,7 +265,7 @@ void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel)    // D
     *pusLevel = ((uint16_t)ubBuf[0] << 8) & 0xFF00;
     *pusLevel |= (uint16_t)ubBuf[1] & 0x00FF;
 }
-void cp2130_set_gpio_Values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask) // Done
+void cp2130_set_gpio_Values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask)
 {
     uint8_t ubBuf[4];
     ubBuf[0] = (uint8_t)(usLevel >> 8);
@@ -275,20 +275,20 @@ void cp2130_set_gpio_Values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t 
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_GPIO_VAL, ubBuf, 4, 0, 0);
 }
 
-void cp2130_get_rtr_state(cp2130_device_t *pCpDev, uint8_t *pubActive)  // Done
+void cp2130_get_rtr_state(cp2130_device_t *pCpDev, uint8_t *pubActive)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_RTR_STATE, pubActive, 1, 0, 0);
 }
-void cp2130_set_rtr_stop(cp2130_device_t *pCpDev, uint8_t ubAbort)  // Done
+void cp2130_set_rtr_stop(cp2130_device_t *pCpDev, uint8_t ubAbort)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_RTR_STOP, &ubAbort, 1, 0, 0);
 }
 
-void cp2130_get_spi_word(cp2130_device_t *pCpDev, uint8_t *pubChNword)  // Done
+void cp2130_get_spi_word(cp2130_device_t *pCpDev, uint8_t *pubChNword)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_SPI_WORD, pubChNword, 11, 0, 0);
 }
-void cp2130_set_spi_word(cp2130_device_t *pCpDev, uint8_t ubCh, uint8_t ubChWord)  // Done
+void cp2130_set_spi_word(cp2130_device_t *pCpDev, uint8_t ubCh, uint8_t ubChWord)
 {
     uint8_t ubBuf[2];
     ubBuf[0] = ubCh;
@@ -296,7 +296,7 @@ void cp2130_set_spi_word(cp2130_device_t *pCpDev, uint8_t ubCh, uint8_t ubChWord
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_SPI_WORD, ubBuf, 2, 0, 0);
 }
 
-void cp2130_get_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t *pubMask, uint16_t *pusInBDelay, uint16_t *pusPostDelay, uint16_t *pusPreDelay)    // untested
+void cp2130_get_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t *pubMask, uint16_t *pusInBDelay, uint16_t *pusPostDelay, uint16_t *pusPreDelay)
 {
     uint8_t ubBuf[8];
     memset(ubBuf, 0x00, 8);
@@ -309,7 +309,7 @@ void cp2130_get_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t *pub
     *pusPreDelay = ((uint16_t)ubBuf[6] << 8) & 0xFF00;
     *pusPreDelay |= (uint16_t)ubBuf[7] & 0x00FF;
 }
-void cp2130_set_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t ubMask, uint16_t usInBDelay, uint16_t usPostDelay, uint16_t usPreDelay)    // unstested
+void cp2130_set_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t ubMask, uint16_t usInBDelay, uint16_t usPostDelay, uint16_t usPreDelay)
 {
     uint8_t ubBuf[8];
     ubBuf[0] = ubSpiCh;
@@ -323,7 +323,7 @@ void cp2130_set_spi_delay(cp2130_device_t *pCpDev, uint8_t ubSpiCh, uint8_t ubMa
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_SPI_DELAY, ubBuf, 8, 0, 0);
 }
 
-void cp2130_get_version(cp2130_device_t *pCpDev, uint8_t *pubMajor, uint8_t *pubMinor)  // Done
+void cp2130_get_version(cp2130_device_t *pCpDev, uint8_t *pubMajor, uint8_t *pubMinor)
 {
     uint8_t ubBuf[2];
     memset(ubBuf, 0x00, 2);
@@ -333,7 +333,7 @@ void cp2130_get_version(cp2130_device_t *pCpDev, uint8_t *pubMajor, uint8_t *pub
 }
 
 // OTP ROM Configuration Commands (Control Transfers)
-void cp2130_get_lock_byte(cp2130_device_t *pCpDev, uint16_t *pusLock)   // untested
+void cp2130_get_lock_byte(cp2130_device_t *pCpDev, uint16_t *pusLock)
 {
     uint8_t ubBuf[2];
     memset(ubBuf, 0x00, 2);
@@ -341,31 +341,41 @@ void cp2130_get_lock_byte(cp2130_device_t *pCpDev, uint16_t *pusLock)   // untes
     *pusLock = ((uint16_t)ubBuf[0] << 8) & 0xFF00;
     *pusLock |= (uint16_t)ubBuf[1] & 0x00FF;
 }
-void cp2130_set_lock_byte(cp2130_device_t *pCpDev, uint16_t usLock) // untested
+void cp2130_set_lock_byte(cp2130_device_t *pCpDev, uint16_t usLock)
 {
     uint8_t ubBuf[2];
     ubBuf[0] = (uint8_t)(usLock >> 8);
     ubBuf[1] = (uint8_t)(usLock & 0x00FF);
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_LOCK_BYTE, ubBuf, 2, 0, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_manufacturer_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   // untested
+void cp2130_get_manufacturer_string(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubBuf[64];
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_MAN_STR_1, ubBuf, 64, 0, 0);
-    for(uint8_t ubPos = 0; ubPos < 31; ubPos++)
+    uint8_t ubStrLen = ubBuf[0];
+    for(uint8_t ubPos = 0; ubPos < MIN(ubStrLen, 31); ubPos++)
     {
-        pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
+        if(ubBuf[3 + (2 * ubPos)]) 
+            pubStr[ubPos] = '?';
+        else
+            pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
     }
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_MAN_STR_2, ubBuf, 64, 0, 0);
-    for(uint8_t ubPos = 31; ubPos < 63; ubPos++)
+    for(uint8_t ubPos = 31; ubPos < MIN(ubStrLen, 63); ubPos++)
     {
-        pubStr[ubPos] = ubBuf[2 * (ubPos - 31)];
+        if(ubBuf[3 + (2 * ubPos)]) 
+            pubStr[ubPos] = '?';
+        else
+            pubStr[ubPos] = ubBuf[2 * (ubPos - 31)];
     }
+    pubStr[ubStrLen] = 0x00;
 }
-void cp2130_set_manufacturer_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   // Done
+void cp2130_set_manufacturer_string(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubStrLen = strlen((const char *)pubStr);
 	if(ubStrLen > 62)
@@ -395,24 +405,34 @@ void cp2130_set_manufacturer_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_MAN_STR_1, ubCmdBuf1, 64, CP2130_MEM_KEY, 0);
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_MAN_STR_2, ubCmdBuf2, 64, CP2130_MEM_KEY, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_prod_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   // untested
+void cp2130_get_prod_string(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubBuf[64];
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_PROD_STR_1, ubBuf, 64, 0, 0);
-    for(uint8_t ubPos = 0; ubPos < 31; ubPos++)
+    uint8_t ubStrLen = ubBuf[0];
+    for(uint8_t ubPos = 0; ubPos < MIN(ubStrLen, 31); ubPos++)
     {
-        pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
+        if(ubBuf[3 + (2 * ubPos)]) 
+            pubStr[ubPos] = '?';
+        else
+            pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
     }
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_PROD_STR_2, ubBuf, 64, 0, 0);
-    for(uint8_t ubPos = 31; ubPos < 63; ubPos++)
+    for(uint8_t ubPos = 31; ubPos < MIN(ubStrLen, 63); ubPos++)
     {
-        pubStr[ubPos] = ubBuf[2 * (ubPos - 31)];
+        if(ubBuf[3 + (2 * ubPos)]) 
+            pubStr[ubPos] = '?';
+        else
+            pubStr[ubPos] = ubBuf[2 * (ubPos - 31)];
     }
+    pubStr[ubStrLen] = 0x00;
 }
-void cp2130_set_prod_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   // Done
+void cp2130_set_prod_string(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubStrLen = strlen((const char *)pubStr);
 	if(ubStrLen > 62)
@@ -442,19 +462,26 @@ void cp2130_set_prod_string(cp2130_device_t *pCpDev, uint8_t *pubStr)   // Done
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, 0x40, CP2130_CMDID_SET_PROD_STR_1, ubData1, 64, CP2130_MEM_KEY, 0);
     cp2130_control_transfer(pCpDev, 0x40, CP2130_CMDID_SET_PROD_STR_2, ubData2, 64, CP2130_MEM_KEY, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_serial(cp2130_device_t *pCpDev, uint8_t *pubStr)    // untested
+void cp2130_get_serial(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubBuf[64];
-    cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_PROD_STR_1, ubBuf, 64, 0, 0);
-    for(uint8_t ubPos = 0; ubPos < 30; ubPos++)
+    memset(ubBuf, 0x00, 64);
+    cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_SERIAL_STR, ubBuf, 64, 0, 0);
+    for(uint8_t ubPos = 0; ubPos < ubBuf[0]; ubPos++)
     {
-        pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
+        if(ubBuf[3 + (2 * ubPos)]) 
+            pubStr[ubPos] = '?';
+        else
+            pubStr[ubPos] = ubBuf[2 + (2 * ubPos)];
     }
+    pubStr[ubBuf[0]] = 0x00;
 }
-void cp2130_set_serial(cp2130_device_t *pCpDev, uint8_t *pubStr)    // Done
+void cp2130_set_serial(cp2130_device_t *pCpDev, uint8_t *pubStr)
 {
     uint8_t ubStrLen = strlen((const char *)pubStr);
 	if(ubStrLen > 30)
@@ -476,36 +503,42 @@ void cp2130_set_serial(cp2130_device_t *pCpDev, uint8_t *pubStr)    // Done
 
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_SERIAL_STR, ubCmdBuf, 64, CP2130_MEM_KEY, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_pin_cfg(cp2130_device_t *pCpDev, uint8_t *pubPinCfg)   // Done
+void cp2130_get_pin_cfg(cp2130_device_t *pCpDev, uint8_t *pubPinCfg)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_PIN_CFG, pubPinCfg, 0x0014, 0, 0);
 }
-void cp2130_set_pin_cfg(cp2130_device_t *pCpDev, uint8_t *pubPinCfg)    // Done
+void cp2130_set_pin_cfg(cp2130_device_t *pCpDev, uint8_t *pubPinCfg)
 {
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_PIN_CFG, pubPinCfg, 0x0014, 0, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_prom_cfg(cp2130_device_t *pCpDev, uint8_t ubBlkIndex, uint8_t *pubBlk) // untested
+void cp2130_get_prom_cfg(cp2130_device_t *pCpDev, uint8_t ubBlkIndex, uint8_t *pubBlk)
 {
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_PROM_CFG, pubBlk, 0x0014, 0, ubBlkIndex);
 }
-void cp2130_set_prom_cfg(cp2130_device_t *pCpDev, uint8_t ubBlkIndex, uint8_t *pubBlk) // untested
+void cp2130_set_prom_cfg(cp2130_device_t *pCpDev, uint8_t ubBlkIndex, uint8_t *pubBlk)
 {
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_SET_PROM_CFG, pubBlk, 0x0014, CP2130_MEM_KEY, ubBlkIndex);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }
 
-void cp2130_get_usb_cfg(cp2130_device_t *pCpDev, uint16_t *pusVid, uint16_t *pusPid, uint8_t *pubMaxPow, uint8_t *pubPowMode, uint8_t *pubMajorRelease, uint8_t *pubMinorRelease, uint8_t *pubTransferPriority) // untested
+void cp2130_get_usb_cfg(cp2130_device_t *pCpDev, uint16_t *pusVid, uint16_t *pusPid, uint8_t *pubMaxPow, uint8_t *pubPowMode, uint8_t *pubMajorRelease, uint8_t *pubMinorRelease, uint8_t *pubTransferPriority)
 {
     uint8_t ubBuf[9];
     memset(ubBuf, 0x00, 9);
-    cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_SET_USB_CFG, ubBuf, 9, CP2130_MEM_KEY, 0);
+    cp2130_control_transfer(pCpDev, CP2130_REQ_DEVICE_HOST_VENDOR, CP2130_CMDID_GET_USB_CFG, ubBuf, 9, 0, 0);
     *pusVid = ((uint16_t)ubBuf[1] << 8) & 0xFF00;   // little endian
     *pusVid |= (uint16_t)ubBuf[0] & 0x00FF;
     *pusPid = ((uint16_t)ubBuf[3] << 8) & 0xFF00;   // little endian
@@ -516,7 +549,7 @@ void cp2130_get_usb_cfg(cp2130_device_t *pCpDev, uint16_t *pusVid, uint16_t *pus
     *pubMinorRelease = ubBuf[7];
     *pubTransferPriority = ubBuf[8];
 }
-void cp2130_set_usb_cfg(cp2130_device_t *pCpDev, uint16_t usVid, uint16_t usPid, uint8_t ubMaxPow, uint8_t ubPowMode, uint8_t ubMajorRelease, uint8_t ubMinorRelease, uint8_t ubTransferPriority, uint8_t ubMask) // untested
+void cp2130_set_usb_cfg(cp2130_device_t *pCpDev, uint16_t usVid, uint16_t usPid, uint8_t ubMaxPow, uint8_t ubPowMode, uint8_t ubMajorRelease, uint8_t ubMinorRelease, uint8_t ubTransferPriority, uint8_t ubMask)
 {
     uint8_t ubBuf[10];
     ubBuf[0] = (uint8_t)(usVid & 0x00FF);   // little endian
@@ -531,5 +564,7 @@ void cp2130_set_usb_cfg(cp2130_device_t *pCpDev, uint16_t usVid, uint16_t usPid,
     ubBuf[9] = ubMask;
     #ifndef CP2130_OTP_ROM_WRITE_PROTECT
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_USB_CFG, ubBuf, 10, CP2130_MEM_KEY, 0);
+    #else
+    printf("\n\rOTP ROM write protect enabled, ignoring write...");
     #endif
 }

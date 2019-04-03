@@ -23,6 +23,8 @@ int main(void)
     cp2130_get_version(spi, &ubMajor, &ubMinor);
     printf("\n\rVersion: %0d.%0d", ubMajor, ubMinor);
 
+    cp2130_set_usb_cfg(spi, 0x10C4, 0x87A0, CP2130_USP_MAX_POW_MA(500u), CP2130_USB_BUS_POW_REG_EN, 3, 0, CP2130_USB_PRIORITY_WRITE, CP2130_USB_CFG_MSK_MAX_POW);
+
     uint16_t usVid, usPid;
     uint8_t ubMaxPow, ubPowMode, ubTransferPriority;
     cp2130_get_usb_cfg(spi, &usVid, &usPid, &ubMaxPow, &ubPowMode, &ubMajor, &ubMinor, &ubTransferPriority);
@@ -54,7 +56,7 @@ int main(void)
     cp2130_set_gpio_mode_level(spi, CP2130_GPIO5, CP2130_GPIO_OUT_PP, CP2130_GPIO_LOW);
     cp2130_set_gpio_mode_level(spi, CP2130_GPIO7, CP2130_GPIO_OUT_PP, CP2130_GPIO_LOW);
 
-    cp2130_set_gpio_Values(spi, CP2130_GPIO7_MSK, CP2130_GPIO7_MSK);
+    cp2130_set_gpio_Values(spi, 0x00, CP2130_GPIO7_MSK);
 
     cp2130_set_clockdiv(spi, 3); // 24 MHz / 3 = 8MHz
 
@@ -64,31 +66,31 @@ int main(void)
 
     printf("\n\rTransfering 100 Bytes...");
     uint8_t ubBuf[256];
-    for(uint8_t i = 0; i < 100; i++)
+    for(uint8_t ubCount = 0; ubCount < 100; ubCount++)
     {
-        ubBuf[i] = i;
+        ubBuf[ubCount] = ubCount;
     }
     cp2130_spi_transfer(spi, ubBuf, 100);
     printf("\n\rgot:");
-    for(uint8_t i = 0; i < 100; i++)
+    for(uint8_t ubCount = 0; ubCount < 100; ubCount++)
     {
-        printf(" 0x%02X", ubBuf[i]);
+        printf(" 0x%02X", ubBuf[ubCount]);
     }
 
-    printf("\n\rWriting 256 Bytes...");
-    for(uint8_t i = 0; i < 100; i++)
+    printf("\n\rWriting 255 Bytes...");
+    for(uint8_t ubCount = 0; ubCount < 255; ubCount++)
     {
-        ubBuf[i] = i;
+        ubBuf[ubCount] = ubCount;
     }
-    cp2130_spi_write(spi, ubBuf, 256);
+    cp2130_spi_write(spi, ubBuf, 255);
 
-    printf("\n\rReading 256 Bytes...");
+    printf("\n\rReading 255 Bytes...");
     memset(ubBuf, 0x00, 256);
-    cp2130_spi_read(spi, ubBuf, 100);
+    cp2130_spi_read(spi, ubBuf, 255);
     printf("\n\rgot:");
-    for(uint8_t i = 0; i < 256; i++)
+    for(uint8_t ubCount = 0; ubCount < 255; ubCount++)
     {
-        printf(" 0x%02X", ubBuf[i]);
+        printf(" 0x%02X", ubBuf[ubCount]);
     }
 
     printf("\n\r");

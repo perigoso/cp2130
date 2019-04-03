@@ -3,6 +3,7 @@
 
 #include <libusb-1.0/libusb.h>
 #include <string.h>
+#include <uchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -201,7 +202,7 @@
 #define CP2130_SPI_DELAY_MSK
 
 // USB Config
-#define CP2130_USP_MAX_POW_MA(ma)       ((uin8_t)(ma / 2u))
+#define CP2130_USP_MAX_POW_MA(ma)       ((uint8_t)(ma / 2u))
 #define CP2130_USB_BUS_POW_REG_EN       0x00
 #define CP2130_USB_SELF_POW_REG_DIS     0x01
 #define CP2130_USB_SELF_POW_REG_EN      0x02

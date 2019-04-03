@@ -17,7 +17,7 @@ CC = gcc
 CXX = g++
 
 # Compiller flags
-CFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -std=gnu99
+CFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -std=gnu11
 CXXFLAGS = $(addprefix -I,$(INCLUDEDIRSTRUCT)) -std=gnu++11
 
 LDLIBS = -ludev -lusb-1.0
