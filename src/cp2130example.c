@@ -58,11 +58,20 @@ int main(void)
 
     cp2130_set_gpio_Values(spi, 0x00, CP2130_GPIO7_MSK);
 
+    cp2130_set_event_counter(spi, CP2130_EVNT_CNT_FALLING_EDG, 0);
+
     cp2130_set_clockdiv(spi, 3); // 24 MHz / 3 = 8MHz
 
     cp2130_set_spi_word(spi, CP2130_SPI_CH0, CP2130_SPI_WRD_CS_MODE_PP | CP2130_SPI_WRD_CLK_750K);
 
     cp2130_set_gpio_cs(spi, CP2130_CS_CH0, CP2130_CS_MD_EN_DIS_OTHERS);
+
+    //sleep(5);
+
+    uint8_t ubEvntMd;
+    uint16_t ubCount;
+    cp2130_get_event_counter(spi, &ubEvntMd, &ubCount);
+    printf("\n\rEvent Counter: %d", ubCount);
 
     printf("\n\rTransfering 100 Bytes...");
     uint8_t ubBuf[256];
