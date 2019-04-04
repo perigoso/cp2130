@@ -3,17 +3,19 @@
 
 #include <libusb-1.0/libusb.h>
 #include <string.h>
-#include <uchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "debug_macros.h"
+#include "utils.h"
+
 // OTP ROM WRITE PROTECT
-#define CP2130_OTP_ROM_WRITE_PROTECT
+#define CP2130_OTP_ROM_WRITE_PROTECT    // prevents unwanted writes to the one time programmable prom
 
 // Product and vendor ids
-#define CP2130_VID  0x10C4
-#define CP2130_PID  0x87A0
+#define CP2130_DEFAULT_VID  0x10C4      // Silicon Labs VID
+#define CP2130_DEFAULT_PID  0x87A0      // default pid Silabs allocated for cp2130
 
 // EndPoints
 #define CP2130_EP_HOST_DEVICE   0x01
@@ -215,10 +217,7 @@
 #define CP2130_USB_CFG_MSK_VERSION      0x10
 #define CP2130_USB_CFG_MSK_PRIORITY     0x80
 
-// define this in a utils file
-#define MAX(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
-#define MIN(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
-
+// device handle
 typedef struct cp2130_device_t
 {
     uint8_t ubKernelAttached;
@@ -226,8 +225,8 @@ typedef struct cp2130_device_t
     libusb_device_handle *pDev;
 } cp2130_device_t;
 
-// lib
-cp2130_device_t *cp2130_init(libusb_context *ctx);
+// initializer and destructor
+cp2130_device_t *cp2130_init(libusb_context *ctx, uint16_t usVid, uint16_t usPid);
 void cp2130_free(cp2130_device_t *pCpDev);
 
 inline void cp2130_set_timeout(cp2130_device_t *pCpDev, uint16_t usTimeout)

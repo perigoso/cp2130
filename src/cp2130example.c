@@ -1,8 +1,9 @@
-
 #include <libusb-1.0/libusb.h>
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "utils.h"
+#include "debug_macros.h"
 #include "cp2130.h"
 
 int main(void)
@@ -17,7 +18,7 @@ int main(void)
 	}
 	libusb_set_debug(ctx, LIBUSB_LOG_LEVEL_WARNING);
 
-    cp2130_device_t *spi = cp2130_init(ctx);
+    cp2130_device_t *spi = cp2130_init(ctx, CP2130_DEFAULT_VID, CP2130_DEFAULT_PID);
 
     uint8_t ubMajor, ubMinor;
     cp2130_get_version(spi, &ubMajor, &ubMinor);
@@ -104,7 +105,7 @@ int main(void)
 
     ubBuf[0] = 0x03;    // mcp2515 read
     ubBuf[1] = 0b00001110;    // addr
-    ubBuf[2] = 0x00;  // data   
+    ubBuf[2] = 0x00;  // data
 
     cp2130_spi_transfer(spi, ubBuf, 3);
 
