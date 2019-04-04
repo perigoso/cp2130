@@ -257,7 +257,7 @@ void cp2130_set_gpio_mode_level(cp2130_device_t *pCpDev, uint8_t ubIndex, uint8_
     cp2130_control_transfer(pCpDev, CP2130_REQ_HOST_DEVICE_VENDOR, CP2130_CMDID_SET_GPIO_MDLVL, ubBuf, 3, 0, 0);
 }
 
-void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel)
+void cp2130_get_gpio_values(cp2130_device_t *pCpDev, uint16_t *pusLevel)
 {
     uint8_t ubBuf[2];
     memset(ubBuf, 0x00, 2);
@@ -265,7 +265,7 @@ void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel)
     *pusLevel = ((uint16_t)ubBuf[0] << 8) & 0xFF00;
     *pusLevel |= (uint16_t)ubBuf[1] & 0x00FF;
 }
-void cp2130_set_gpio_Values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask)
+void cp2130_set_gpio_values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask)
 {
     uint8_t ubBuf[4];
     ubBuf[0] = (uint8_t)(usLevel >> 8);

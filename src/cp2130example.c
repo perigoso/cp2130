@@ -56,13 +56,13 @@ int main(void)
     cp2130_set_gpio_mode_level(spi, CP2130_GPIO5, CP2130_GPIO_OUT_PP, CP2130_GPIO_LOW);
     cp2130_set_gpio_mode_level(spi, CP2130_GPIO7, CP2130_GPIO_OUT_PP, CP2130_GPIO_LOW);
 
-    cp2130_set_gpio_Values(spi, 0x00, CP2130_GPIO7_MSK);
+    cp2130_set_gpio_values(spi, 0x00, CP2130_GPIO7_MSK);
 
     cp2130_set_event_counter(spi, CP2130_EVNT_CNT_FALLING_EDG, 0);
 
     cp2130_set_clockdiv(spi, 3); // 24 MHz / 3 = 8MHz
 
-    cp2130_set_spi_word(spi, CP2130_SPI_CH0, CP2130_SPI_WRD_CS_MODE_PP | CP2130_SPI_WRD_CLK_750K);
+    cp2130_set_spi_word(spi, CP2130_SPI_CH0, CP2130_SPI_WRD_CS_MODE_PP | CP2130_SPI_WRD_CLK_3M);
 
     cp2130_set_gpio_cs(spi, CP2130_CS_CH0, CP2130_CS_MD_EN_DIS_OTHERS);
 
@@ -101,6 +101,14 @@ int main(void)
     {
         printf(" 0x%02X", ubBuf[ubCount]);
     }
+
+    ubBuf[0] = 0x03;    // mcp2515 read
+    ubBuf[1] = 0b00001110;    // addr
+    ubBuf[2] = 0x00;  // data   
+
+    cp2130_spi_transfer(spi, ubBuf, 3);
+
+    printf("\n\rGot 0x%02X from mcp2515", ubBuf[2]);
 
     printf("\n\r");
 

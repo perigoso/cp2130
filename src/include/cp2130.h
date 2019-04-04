@@ -219,8 +219,6 @@
 #define MAX(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
 #define MIN(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 
-typedef uint8_t* str_t;
-
 typedef struct cp2130_device_t
 {
     uint8_t ubKernelAttached;
@@ -261,8 +259,8 @@ void cp2130_set_gpio_cs(cp2130_device_t *pCpDev, uint8_t usCh, uint8_t usCtrl);
 void cp2130_get_gpio_mode_level(cp2130_device_t *pCpDev, uint16_t *pusLevel, uint16_t *pusMode);
 void cp2130_set_gpio_mode_level(cp2130_device_t *pCpDev, uint8_t ubIndex, uint8_t ubMode, uint8_t ubLevel);
 
-void cp2130_get_gpio_Values(cp2130_device_t *pCpDev, uint16_t *pusLevel);
-void cp2130_set_gpio_Values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask);
+void cp2130_get_gpio_values(cp2130_device_t *pCpDev, uint16_t *pusLevel);
+void cp2130_set_gpio_values(cp2130_device_t *pCpDev, uint16_t usLevel, uint16_t usMask);
 
 void cp2130_get_rtr_state(cp2130_device_t *pCpDev, uint8_t *pubActive);
 void cp2130_set_rtr_stop(cp2130_device_t *pCpDev, uint8_t ubAbort);
