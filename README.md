@@ -6,7 +6,7 @@ This is an open source C library for use with the <a href="https://www.silabs.co
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-There is an [Example](cp2130example.c) file to get you started.
+There is an [Example](src/cp2130example.c) file to get you started.
 
 ### Prerequisites
 
