@@ -60,4 +60,6 @@ make-dir:
 clean:
 	@rm -rf $(OBJECTDIR)/*
 
+.PHONY: clean make-dir all
+
 -include $(DEPENDENCIES)

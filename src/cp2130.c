@@ -11,7 +11,7 @@ cp2130_device_t *cp2130_init(libusb_context *ctx, uint16_t usVid, uint16_t usPid
     if(!ctx)
     {
         DBGPRINTLN_CTX("error: invalid libUSB context.");
-        return;
+        return NULL;
     }
 
     DBGPRINTLN_CTX("allocating space for device...");
