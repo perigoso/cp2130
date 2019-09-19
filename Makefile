@@ -1,4 +1,4 @@
-APP_NAME = cp2130
+APP_NAME = usb
 
 # Directories
 TARGETDIR = bin
